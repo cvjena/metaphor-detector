@@ -1,0 +1,41 @@
+#!python
+import sys
+import torch
+
+
+if not len(sys.argv) == 3:
+    print("usage: torchdiff model1 model2")
+    exit(1)
+
+pm1 = sys.argv[1]
+pm2 = sys.argv[2]
+
+try:
+    model1 = torch.load(pm1)
+except:
+    print(pm1, "is not a model")
+    exit(1)
+
+try:
+    model2 = torch.load(pm2)
+except:
+    print(pm2, "is not a model")
+    exit(1)
+
+def is_equal(model1, model2):
+    return all([
+        torch.all(
+            torch.eq(p1, p2)).item() for p1, p2 in zip(model1.parameters(), model2.parameters()
+                )
+        ])
+try:
+    ie = is_equal(model1, model2)
+except:
+    print("models", pm1, "and", pm2, "differ")
+    exit(1)
+
+if ie:
+    exit()
+else:
+    print("models", pm1, "and", pm2, "differ")
+    exit(1)
